@@ -6,7 +6,13 @@
 
 #define LOAD_START 8
 #define LOAD_END   12
-#define LOAD_SIZE  (LOAD_END - LOAD_START)
+#define LOAD_SIZE  (LOAD_END - LOAD_START + 1)
+
+#define LOAD_RESISTANCE 1000.0
+#define LOAD_VOLTAGE 5.0
+#define POWER_PER_LOAD ((LOAD_VOLTAGE * LOAD_VOLTAGE) / LOAD_RESISTANCE)
+
+#define GetCurrentUsage() (ActiveLoads() * POWER_PER_LOAD)
 
 static bool load_taken[LOAD_SIZE] = { false };
 
@@ -14,10 +20,13 @@ static bool load_taken[LOAD_SIZE] = { false };
 void LoadInit() {
   //TODO: remove this on demo
   Serial.begin(9600);
+  Serial.println("Initializing pins....");
   
   for (int x = LOAD_START; x <= LOAD_END; x ++) {
     pinMode(x, INPUT);
   }
+
+  Serial.println("Initialization complete!");
 }
 
 /* returns the number of loads present in the circuit printing them to serial in process (on debug)*/
@@ -43,6 +52,8 @@ void LoadUpdate() {
   //TODO: remove on demo
   Serial.print(ActiveLoads());
   Serial.println(" are active!");
+  Serial.print(GetCurrentUsage());
+  Serial.println(" Watts is in use!");
 }
 
 #endif
